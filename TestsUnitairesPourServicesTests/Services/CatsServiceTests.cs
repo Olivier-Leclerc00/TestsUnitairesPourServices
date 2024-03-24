@@ -1,10 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TestsUnitairesPourServices.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TestsUnitairesPourServices.Data;
 using TestsUnitairesPourServices.Exceptions;
@@ -16,6 +10,12 @@ namespace TestsUnitairesPourServices.Services.Tests
     public class CatsServiceTests
     {
         DbContextOptions<ApplicationDBContext> options;
+
+        private const int CLEAN_HOUSE_ID = 1;
+        private const int DIRTY_HOUSE_ID = 1;
+
+        private const int WILD_CAT_ID = 1;
+        private const int CAT_IN_DIRTY_HOUSE_ID = 1;
 
         public CatsServiceTests()
         {
@@ -32,21 +32,21 @@ namespace TestsUnitairesPourServices.Services.Tests
 
             db.Cat.Add(new Cat()
             {
-                Id = 1,
+                Id = WILD_CAT_ID,
                 Name = "Lonely",
                 Age = 12
             });
 
             House maisonPropre = new House()
             {
-                Id = 1,
+                Id = CLEAN_HOUSE_ID,
                 Address = "Tite maison propre et orange",
                 OwnerName = "Ludwig"
             };
 
             House maisonSale = new House()
             {
-                Id = 2,
+                Id = DIRTY_HOUSE_ID,
                 Address = "Grosse maison sale",
                 OwnerName = "Bob"
             };
@@ -56,7 +56,7 @@ namespace TestsUnitairesPourServices.Services.Tests
 
             Cat chatPasPropre = new Cat()
             {
-                Id = 2,
+                Id = CAT_IN_DIRTY_HOUSE_ID,
                 Name = "ToutSale",
                 Age = 3,
                 House = maisonSale
@@ -79,11 +79,11 @@ namespace TestsUnitairesPourServices.Services.Tests
         {
             using ApplicationDBContext db = new ApplicationDBContext(options);
             var catsService = new CatsService(db);
-            var maisonPropre = db.House.Find(1)!;
-            var maisonSale = db.House.Find(2)!;
+            var maisonPropre = db.House.Find(CLEAN_HOUSE_ID)!;
+            var maisonSale = db.House.Find(DIRTY_HOUSE_ID)!;
 
             // Tout est bon, le chat va être dans une maison propre
-            var chatMaintenantPropre = catsService.Move(2, maisonSale, maisonPropre);
+            var chatMaintenantPropre = catsService.Move(CAT_IN_DIRTY_HOUSE_ID, maisonSale, maisonPropre);
             Assert.IsNotNull(chatMaintenantPropre);
         }
 
@@ -92,8 +92,8 @@ namespace TestsUnitairesPourServices.Services.Tests
         {
             using ApplicationDBContext db = new ApplicationDBContext(options);
             var catsService = new CatsService(db);
-            var maisonPropre = db.House.Find(1)!;
-            var maisonSale = db.House.Find(2)!;
+            var maisonPropre = db.House.Find(CLEAN_HOUSE_ID)!;
+            var maisonSale = db.House.Find(DIRTY_HOUSE_ID)!;
 
             //Retourne null si le chat ne peut pas être trouvé (aucun chat avec Id: 42)
             var cat = catsService.Move(42, maisonSale, maisonPropre);
@@ -105,11 +105,11 @@ namespace TestsUnitairesPourServices.Services.Tests
         {
             using ApplicationDBContext db = new ApplicationDBContext(options);
             var catsService = new CatsService(db);
-            var maisonPropre = db.House.Find(1)!;
-            var maisonSale = db.House.Find(2)!;
+            var maisonPropre = db.House.Find(CLEAN_HOUSE_ID)!;
+            var maisonSale = db.House.Find(DIRTY_HOUSE_ID)!;
 
             //Le chat avec l'Id 1 n'a pas de maison
-            Exception e = Assert.ThrowsException<WildCatException>(() => catsService.Move(1, maisonSale, maisonPropre));
+            Exception e = Assert.ThrowsException<WildCatException>(() => catsService.Move(WILD_CAT_ID, maisonSale, maisonPropre));
             Assert.AreEqual("On n'apprivoise pas les chats sauvages", e.Message);
         }
 
@@ -118,11 +118,11 @@ namespace TestsUnitairesPourServices.Services.Tests
         {
             using ApplicationDBContext db = new ApplicationDBContext(options);
             var catsService = new CatsService(db);
-            var maisonPropre = db.House.Find(1)!;
-            var maisonSale = db.House.Find(2)!;
+            var maisonPropre = db.House.Find(CLEAN_HOUSE_ID)!;
+            var maisonSale = db.House.Find(DIRTY_HOUSE_ID)!;
 
             // Les maisons sont inversées
-            Exception e = Assert.ThrowsException<DontStealMyCatException>(() => catsService.Move(2, maisonPropre, maisonSale));
+            Exception e = Assert.ThrowsException<DontStealMyCatException>(() => catsService.Move(CAT_IN_DIRTY_HOUSE_ID, maisonPropre, maisonSale));
             Assert.AreEqual("Touche pas à mon chat!", e.Message);
         }
     }
