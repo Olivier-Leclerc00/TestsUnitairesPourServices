@@ -12,10 +12,10 @@ namespace TestsUnitairesPourServices.Services.Tests
         DbContextOptions<ApplicationDBContext> options;
 
         private const int CLEAN_HOUSE_ID = 1;
-        private const int DIRTY_HOUSE_ID = 1;
+        private const int DIRTY_HOUSE_ID = 2;
 
         private const int WILD_CAT_ID = 1;
-        private const int CAT_IN_DIRTY_HOUSE_ID = 1;
+        private const int CAT_IN_DIRTY_HOUSE_ID = 2;
 
         public CatsServiceTests()
         {
