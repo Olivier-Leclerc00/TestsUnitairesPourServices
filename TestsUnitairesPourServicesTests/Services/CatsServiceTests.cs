@@ -21,6 +21,7 @@ namespace TestsUnitairesPourServices.Services.Tests
         {
             options = new DbContextOptionsBuilder<ApplicationDBContext>()
                 .UseInMemoryDatabase(databaseName: "CatsService")
+                .UseLazyLoadingProxies(true)
                 .Options;
         }
 
